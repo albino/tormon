@@ -9,7 +9,8 @@ curl -L https://cpanmin.us | perl - App::cpanminus
 cpanm -l /var/www/perl5 FCGI
 perl -I /var/www/perl5/lib/perl5 -MFCGI -M5.010 -e 'say "it works"' # test perl installation
 install -o www -g www -m 0500 tormon/* /var/www/tormon/
-echo 'echo -n "Starting tormon" && doas -u www /var/www/tormon/tormon.fcgi &' >> /etc/rc.local
+echo 'echo "Starting tormon" && doas -u www /var/www/tormon/tormon.fcgi &' >> /etc/rc.local
+sh /etc/rc.local # assuming tormon is the only thing in rc.local
 
 # updating
 install -o www -g www -m 0500 tormon/* /var/www/tormon/
