@@ -4,6 +4,14 @@ use strict;
 use warnings;
 use FCGI;
 use Switch;
+use File::Slurp;
+use Template::Simple;
+use FindBin qw($Bin);
+
+my $tmpl = new Template::Simple (
+  pre_delim  => "<%",
+  post_delim => "%>",
+);
 
 my $sock = FCGI::OpenSocket(
   "/var/www/run/tormon.sock",
@@ -21,14 +29,24 @@ my $request = FCGI::Request(
 
 while ($request->Accept() <= 0) {
   print "Content-Type: text/html\n\n";
+  my $content;
 
   switch ($ENV{"REQUEST_URI"}) {
     case "/debug" {
       use Data::Dumper;
-      print "<textarea>" . Dumper(\%ENV) . "</textarea>";
+      $content = "<textarea>" . Dumper(\%ENV) . "</textarea>";
     }
     case "/" {
-      print "Hello, world!";
+      $content = "Hello, world!";
     }
   }
+
+  my $tt = read_file("$Bin/wrapper.tt");
+  my $html = $tmpl->render(
+    $tt,
+    {
+      content => $content,
+    },
+  );
+  print ${$html};
 }
