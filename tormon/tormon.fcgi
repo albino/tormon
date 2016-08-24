@@ -3,6 +3,7 @@ use 5.010;
 use strict;
 use warnings;
 use FCGI;
+use Switch;
 
 my $sock = FCGI::OpenSocket(
   "/var/www/run/tormon.sock",
@@ -19,7 +20,15 @@ my $request = FCGI::Request(
 );
 
 while ($request->Accept() <= 0) {
-  say "Content-Type: text/plain\n\n";
-  use Data::Dumper;
-  print Dumper(\%ENV);
+  print "Content-Type: text/html\n\n";
+
+  switch ($ENV{"REQUEST_URI"}) {
+    case "/debug" {
+      use Data::Dumper;
+      print "<textarea>" . Dumper(\%ENV) . "</textarea>";
+    }
+    case "/" {
+      print "Hello, world!";
+    }
+  }
 }
