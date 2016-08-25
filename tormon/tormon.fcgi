@@ -30,18 +30,25 @@ my $request = FCGI::Request(
 );
 
 while ($request->Accept() <= 0) {
-  print "Content-Type: text/html\n\n";
   my $content;
+  my $code;
 
   switch ($ENV{"REQUEST_URI"}) {
     case "/debug" {
       # TODO - remove this, it's a security vulnerability
       use Data::Dumper;
       $content = "<textarea>" . Dumper(\%ENV) . "</textarea>";
+      $code = "\n"; # 200 OK
     }
     case "/" {
       my $tt = read_file("$Bin/index.tt");
       $content = ${ $tmpl->render($tt, {version => $VERSION}) };
+      $code = "\n"; # 200 OK
+    }
+    else {
+      my $tt = read_file("$Bin/error.tt");
+      $content = ${ $tmpl->render($tt, {err => 404}) };
+      $code = "Status: 404 Not Found\n\n";
     }
   }
 
@@ -52,5 +59,5 @@ while ($request->Accept() <= 0) {
       content => $content,
     },
   );
-  print ${$html};
+  print "Content-Type: text/html\n", $code, ${$html};
 }
