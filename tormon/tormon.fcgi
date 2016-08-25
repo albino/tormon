@@ -6,6 +6,7 @@ use FCGI;
 use Switch;
 use File::Slurp;
 use Template::Simple;
+use Email::Valid;
 use FindBin qw($Bin);
 
 my $VERSION = "1.0";
@@ -34,16 +35,36 @@ while ($request->Accept() <= 0) {
   my $code;
 
   switch ($ENV{"REQUEST_URI"}) {
-    case "/debug" {
-      # TODO - remove this, it's a security vulnerability
-      use Data::Dumper;
-      $content = "<textarea>" . Dumper(\%ENV) . "</textarea>";
-      $code = "\n"; # 200 OK
-    }
     case "/" {
       my $tt = read_file("$Bin/index.tt");
       $content = ${ $tmpl->render($tt, {version => $VERSION}) };
       $code = "\n"; # 200 OK
+    }
+    case "/subscribe" {
+      read STDIN, my $buf, $ENV{"CONTENT_LENGTH"};
+      my @pairs = split /&/, $buf;
+      my %input;
+      for (@pairs) {
+        $_ =~ s/\+/ /g;
+        $_ =~ s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg;
+        my ($a, $b) = split '=', $_;
+        $input{$a} = $b;
+      }
+
+      if (!($input{"spam"} =~ m/London/i)) {
+        $content = read_file("$Bin/e_security.tt");
+        last;
+      }
+      if (!($input{"fp"} =~ m/^[A-F0-9]{40}$/)) {
+        $content = read_file("$Bin/e_fingerprint.tt");
+        last;
+      }
+      if (!Email::Valid->address($input{"email"})) {
+        $content = read_file("$Bin/e_email.tt");
+        last;
+      }
+
+      # Add the email to database
     }
     else {
       my $tt = read_file("$Bin/error.tt");
