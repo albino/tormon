@@ -8,6 +8,8 @@ use File::Slurp;
 use Template::Simple;
 use FindBin qw($Bin);
 
+my $VERSION = "1.0";
+
 my $tmpl = new Template::Simple (
   pre_delim  => "<%",
   post_delim => "%>",
@@ -33,11 +35,13 @@ while ($request->Accept() <= 0) {
 
   switch ($ENV{"REQUEST_URI"}) {
     case "/debug" {
+      # TODO - remove this, it's a security vulnerability
       use Data::Dumper;
       $content = "<textarea>" . Dumper(\%ENV) . "</textarea>";
     }
     case "/" {
-      $content = "Hello, world!";
+      my $tt = read_file("$Bin/index.tt");
+      $content = ${ $tmpl->render($tt, {version => $VERSION}) };
     }
   }
 

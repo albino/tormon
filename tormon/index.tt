@@ -1,0 +1,19 @@
+<h1>Tor Relay/Bridge Monitor</h1>
+<p>This is a simple service which sends emails when a Tor relay/bridge goes down. I built it after Tor's Weather service which also did this vanished mysteriously.</p>
+<form action=subscribe method=post>
+  <label for=fp>Relay/bridge fingerprint to monitor:</label>
+  <input id=fp type=text name=fp>
+  <br />
+  <label for=email>Your email:</label>
+  <input id=email type=email name=email>
+  <br />
+  <!-- simple but effective anti-spam check -->
+  <label for=spam>What is the capital city of England?</label>
+  <input id=spam type=text name=spam>
+  <br />
+  <button action=submit>Submit</button>
+</form>
+<hr>
+<p id="footer">
+  tormon version <% version %> by <a href="https://keybase.io/albino">albino</a> | for help, contact albino AT autistici DOT org
+</p>
