@@ -66,7 +66,6 @@ while ($request->Accept() <= 0) {
     case "/" {
       my $tt = read_file("$Bin/index.tt");
       $content = ${ $tmpl->render($tt, {version => $VERSION}) };
-      $code = "\n"; # 200 OK
     }
     case "/subscribe" {
       read STDIN, my $buf, $ENV{"CONTENT_LENGTH"};
@@ -92,9 +91,21 @@ while ($request->Accept() <= 0) {
         last;
       }
 
+      # Check if this email/fp combo is already in db
+      my $sth = $dbh->prepare("select id from users where email=? and fp=?");
+      $sth->bind_param(1, $input{"email"});
+      $sth->bind_param(2, $input{"fp"});
+      $sth->execute;
+      my $href = $sth->fetchrow_hashref;
+      if ($sth->rows != 0) {
+        $content = read_file("$Bin/e_exists.tt");
+        last;
+      }
+      $sth->finish;
+
       # Add the email to database
       my $secret = rand_string();
-      my $sth = $dbh->prepare("insert into users (email, confirmed, fp, secret)
+      $sth = $dbh->prepare("insert into users (email, confirmed, fp, secret)
                      values (?, 0, ?, ?);");
       $sth->bind_param(1, $input{"email"});
       $sth->bind_param(2, $input{"fp"});
@@ -126,7 +137,6 @@ while ($request->Accept() <= 0) {
       });
 
       $content = read_file("$Bin/subscribe.tt");
-      $code = "\n";
     }
     case (/^\/confirm\?id=([0-9]+)&s=([a-z]{16})$/) {
       # limit scope or something
@@ -155,7 +165,6 @@ while ($request->Accept() <= 0) {
 
         $content = read_file("$Bin/confirm.tt");
       }
-      $code = "\n";
     }
     else {
       my $tt = read_file("$Bin/error.tt");
@@ -171,5 +180,6 @@ while ($request->Accept() <= 0) {
       content => $content,
     },
   );
+  $code = "\n" unless defined $code;
   print "Content-Type: text/html\n", $code, ${$html};
 }
