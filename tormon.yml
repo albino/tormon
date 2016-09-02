@@ -1,0 +1,7 @@
+baseurl: http://localhost:8080 # not including trailing /
+mail:
+  # STARTTLS encryption is used
+  host: smtp.sparkpostmail.com
+  port: 587
+  user: SMTP_Injection
+  password: yourapikey

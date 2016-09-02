@@ -1,6 +1,7 @@
 create table users (
-  id int primary key not null,
+  id integer primary key,
   email text not null,
-  confirmed int not null,
-  subscriptions text
+  confirmed integer not null,
+  fp text not null,
+  secret text
 );
