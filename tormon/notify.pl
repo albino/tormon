@@ -79,7 +79,9 @@ SUB: while (my $sub = $sth->fetchrow_hashref) {
       ],
       body => "Hi,\n\nThe Tor node with the fingerprint '"
               . $sub->{"fp"} . "' " .
-              ($status == 1 ? "is down." : "has disappeared from the Tor network!"),
+              ($status == 1 ? "is down." : "has disappeared from the Tor network!")
+              . "\n\n----------\nTo unsubscribe, click this link:\n"
+              . $config->{"baseurl"}."/unsubscribe?id=$sub->{id}&s=$sub->{secret}",
     );
     my $trans = new Email::Sender::Transport::SMTPS (
       host => $config->{mail}->{host},

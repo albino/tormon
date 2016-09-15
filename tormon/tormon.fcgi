@@ -166,6 +166,33 @@ while ($request->Accept() <= 0) {
         $content = read_file("$Bin/confirm.tt");
       }
     }
+    case (/^\/unsubscribe\?id=[0-9]+&s=[a-z]{16}$/) {
+      if ($ENV{REQUEST_URI} =~ /^\/unsubscribe\?id=([0-9]+)&s=([a-z]{16})$/) {
+        my $id = $1;
+        my $secret = $2;
+        my $q = $dbh->prepare("select * from users where id=? and secret=?");
+        $q->bind_param(1, $id);
+        $q->bind_param(2, $secret);
+        $q->execute;
+        my $href = $q->fetchrow_hashref;
+
+        if ($q->rows != 1) {
+          $code = "Status: 403 Forbidden";
+          my $tt = read_file("$Bin/error.tt");
+          $content = ${ $tmpl->render($tt, {err => 403}) };
+          last;
+        }
+
+        $q->finish;
+        $q = $dbh->prepare("delete from users where id=? and secret=?");
+        $q->bind_param(1, $id);
+        $q->bind_param(2, $secret);
+        $q->execute;
+        $q->finish;
+
+        $content = read_file("$Bin/unsubscribe.tt");
+      }
+    }
     else {
       my $tt = read_file("$Bin/error.tt");
       $content = ${ $tmpl->render($tt, {err => 404}) };
