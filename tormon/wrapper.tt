@@ -8,7 +8,7 @@
       input{width: calc(30% - 20px);}
       label{width: 70%;}
       label, input{display: inline-block;}
-      form{margin-bottom: 30px}
+      form{margin-bottom: 15px}
       #footer{margin-top: 0;color:#666;font-style:italic;font-size:12px;}
     </style>
   </head>

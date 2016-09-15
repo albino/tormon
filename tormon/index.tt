@@ -12,6 +12,8 @@
   <input id=spam type=text name=spam>
   <br />
   <button action=submit>Submit</button>
+  <br />
+  <small><em>For bridges, you should use the hashed fingerprint.</em></small>
 </form>
 <hr>
 <p id="footer">

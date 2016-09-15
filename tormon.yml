@@ -5,3 +5,4 @@ mail:
   port: 587
   user: SMTP_Injection
   password: yourapikey
+  from: "tormon@tor.uptime.party"

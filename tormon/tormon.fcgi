@@ -105,8 +105,8 @@ while ($request->Accept() <= 0) {
 
       # Add the email to database
       my $secret = rand_string();
-      $sth = $dbh->prepare("insert into users (email, confirmed, fp, secret)
-                     values (?, 0, ?, ?);");
+      $sth = $dbh->prepare("insert into users (email, confirmed, fp, secret, status)
+                     values (?, 0, ?, ?, 0);");
       $sth->bind_param(1, $input{"email"});
       $sth->bind_param(2, $input{"fp"});
       $sth->bind_param(3, $secret);
@@ -119,7 +119,7 @@ while ($request->Accept() <= 0) {
       my $email = Email::Simple->create(
         header => [
           To => $input{"email"},
-          From => '"Tor Relay Monitor" <tormon@tor.uptime.party>',
+          From => '"Tor Relay Monitor" <' . $config->{"mail"}->{"from"} . '>',
           Subject => "Confirm your email",
         ],
         body => "Hi,\n\nSomebody entered your email into the Tor relay monitor. If this was you, please click the link below to activate notifications.\n\n$config->{baseurl}/confirm?id=$id&s=$secret\n\nIf this wasn't you, just delete this email. If you'd like to contact the administrator, please send an email to albino\@autistici.org.\n",
