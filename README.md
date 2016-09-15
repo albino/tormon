@@ -14,7 +14,7 @@ chown www:www /var/www
 chmod 0600 /var/www/tormon.db
 install -o www -g www -m 0400 tormon.yml /var/www/
 # customise the values in /var/www/tormon.yml to your liking...
-echo 'echo "Starting tormon" && do doas -u www /var/www/tormon/tormon.fcgi &' >> /etc/rc.local
+echo 'echo "Starting tormon" && doas -u www /var/www/tormon/tormon.fcgi &' >> /etc/rc.local
 sh /etc/rc.local # assuming tormon is the only thing in rc.local
 rcctl enable httpd
 rcctl start httpd
