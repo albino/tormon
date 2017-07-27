@@ -19,5 +19,5 @@
 <p id="footer">
   tormon version <% version %> by <a href="https://keybase.io/albino">albino</a> | for help, contact albino AT autistici DOT org
   <br />
-  <a href="https://git.fuwafuwa.moe/albino/tormon">source code</a>
+  <a href="https://github.com/whiteisthenewblack/tormon">source code</a>
 </p>
